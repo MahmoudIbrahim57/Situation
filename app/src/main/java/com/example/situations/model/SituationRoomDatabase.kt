@@ -1,13 +1,11 @@
-package model
+package com.example.situations.model
 
 import android.arch.persistence.room.Database
-import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
-import junit.runner.Version
-import java.security.AccessControlContext
-@Database(entities = [Situation::class],version = 1)
+
+@Database( entities = [Situation::class],version = 1, exportSchema = false)
 abstract  class SituationRoomDatabase : RoomDatabase() {
 
     abstract fun situationDao() : SituationDAO

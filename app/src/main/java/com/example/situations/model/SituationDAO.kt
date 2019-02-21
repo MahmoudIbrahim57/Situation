@@ -1,4 +1,4 @@
-package model
+package com.example.situations.model
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*

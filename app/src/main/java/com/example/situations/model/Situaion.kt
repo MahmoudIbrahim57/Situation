@@ -1,4 +1,4 @@
-package model
+package com.example.situations.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

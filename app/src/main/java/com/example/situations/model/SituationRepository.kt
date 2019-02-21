@@ -1,8 +1,7 @@
-package model
+package com.example.situations.model
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
-import android.arch.persistence.room.Delete
 import android.os.AsyncTask
 
 class SituationRepository(application: Application) {
@@ -24,6 +23,10 @@ class SituationRepository(application: Application) {
     fun deleteSituation(situation: Situation)
     {
         DeleteAsynTask(situationDAO!!).execute(situation)
+    }
+    fun deleteAllSituation()
+    {
+        DeleteAllAsynTask(situationDAO!!).execute()
     }
     fun getAllSituation(): LiveData<List<Situation>>
     {
