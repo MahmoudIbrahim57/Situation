@@ -1,5 +1,7 @@
 package com.example.situations.view
 
+import android.app.AlertDialog
+import android.app.Dialog
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
@@ -12,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.example.situations.R
 
@@ -20,13 +23,19 @@ import com.example.situations.model.Situation
 import com.example.situations.utils.*
 import com.example.situations.viewModel.SituationViewModel
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() , SituationListAdapter.ItemClickListener {
+
+    override fun onItemClick(view: View, position: Int) {
+        val intent = Intent(this, NewSituationActivity::class.java)
+        intent.putExtra(EXTRA_KEY_WORD, mAdapter.getSiuation()[position].name)
+        intent.putExtra(EXTRA_KEY_MEANINIG, mAdapter.getSiuation()[position].meaning)
+        startActivityForResult(intent, NEW_SITUATION_REQUES_CODE)
+    }
+
     private lateinit var mViewModel: SituationViewModel
     private  lateinit var  mRecylerView : RecyclerView
     private  lateinit var  mAdapter: SituationListAdapter
-    private var mSituation : List<Situation>
-            = mutableListOf<Situation>(Situation("situation1"
-        ,"hello sir"),Situation("situation2","hello sir"))
+    private var mSituation : List<Situation> = mutableListOf<Situation>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,24 +43,22 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         mRecylerView=findViewById(R.id.recylerView)
-        mAdapter= SituationListAdapter(this)
+        mAdapter= SituationListAdapter(this,this)
         mAdapter.setSituation(mSituation)
         mRecylerView.adapter=mAdapter
         mRecylerView.layoutManager=LinearLayoutManager(this)
         mViewModel= ViewModelProviders.of(this).get(SituationViewModel::class.java)
-        mViewModel.getAllSituation().observe(this, Observer { situations ->
+        mViewModel.getAllSituation().observe(this, Observer {
+                situations ->
             situations?.let {
                 mAdapter.setSituation(it)
-
         } })
         fab.setOnClickListener {
-                view ->
-           val  intent =Intent(this,NewSituationActivity::class.java)
+            val  intent =Intent(this,NewSituationActivity::class.java)
             startActivityForResult(intent,NEW_SITUATION_REQUES_CODE)
 
         }
     }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
             if(requestCode==NEW_SITUATION_REQUES_CODE&&resultCode== RESULT_SAVE){
@@ -63,29 +70,58 @@ class MainActivity : AppCompatActivity() {
 
                     mViewModel.insertSituation(situation)
                 }}
-                else
-
-                     if(resultCode==NEW_SITUATION_REQUES_CODE&&resultCode== RESULT_ERROR) {
+            else
+                if(requestCode==NEW_SITUATION_REQUES_CODE&&resultCode== RESULT_DELETE){
+                data?.let {
+                    val situation = mViewModel.getSituationByName(it.getStringExtra(EXTRA_KEY_WORD))
+                    situation?.let {
+                        mViewModel.deleteSituation(situation)
+                    }
+                    Toast.makeText(this,"Situation deleted",Toast.LENGTH_SHORT).show()
+                }}
+            else
+                if(requestCode==NEW_SITUATION_REQUES_CODE&&resultCode== RESULT_ERROR) {
                     Toast.makeText(this,"empty situation saved",Toast.LENGTH_SHORT).show()
-
                 }
 
 
 
     }
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_clear_list ->
+            {
+                clearListAction()
+                return true
+        }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun clearListAction() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(getString(R.string.app_name))
+        builder.setMessage("Are you sure you wish to clear all Situations.")
+        builder.setPositiveButton("Yes")
+        {
+            _ , _ ->
+            mViewModel.deleteAllSituation()
+            Toast.makeText(this, "all situations deleted", Toast.LENGTH_SHORT).show()
+        }
+        builder.setNegativeButton("No")
+        {
+            dialog , _ ->
+            dialog.dismiss()
+        }
+        val dialog = builder.create()
+        dialog.show()
+
+
     }
 }

@@ -6,36 +6,36 @@ import android.os.AsyncTask
 
 class SituationRepository(application: Application) {
 
-    private val situationDAO:SituationDAO?
-    private val allSituation: LiveData<List<Situation>>?
+    private val situationDAO:SituationDAO
+    private val allSituation: LiveData<List<Situation>>
+
     init {
         val db= SituationRoomDatabase.getInstance(application)
-        situationDAO=db?.situationDao()
-        allSituation=situationDAO?.getAllSituation()
+        situationDAO=db.situationDao()
+        allSituation=situationDAO.getAllSituation()
     }
     fun insertSituation(situation: Situation)
     {
-        InsertAsynTask(situationDAO!!).execute(situation)
+        InsertAsynTask(situationDAO).execute(situation)
     }
 
 
 
     fun deleteSituation(situation: Situation)
     {
-        DeleteAsynTask(situationDAO!!).execute(situation)
+        DeleteAsynTask(situationDAO).execute(situation)
     }
     fun deleteAllSituation()
     {
-        DeleteAllAsynTask(situationDAO!!).execute()
+        DeleteAllAsynTask(situationDAO).execute()
     }
     fun getAllSituation(): LiveData<List<Situation>>
     {
-        DeleteAllAsynTask(situationDAO!!).execute()
-        return allSituation!!
+         return allSituation
     }
     fun getSituationByName (name: String): Situation?
     {
-        val allSituationList = allSituation?.value?.toList()
+        val allSituationList = allSituation.value?.toList()
         allSituationList?.iterator()?.forEach {
             if(it.name==name){
                 return it

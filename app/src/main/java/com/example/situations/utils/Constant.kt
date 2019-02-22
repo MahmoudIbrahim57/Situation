@@ -5,3 +5,5 @@ package com.example.situations.utils
     const val RESULT_SAVE=0
     const val RESULT_ERROR=1
      const val NEW_SITUATION_REQUES_CODE = 1
+     const val RESULT_DELETE = 2
+

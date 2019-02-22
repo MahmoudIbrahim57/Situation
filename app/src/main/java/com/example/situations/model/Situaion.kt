@@ -6,8 +6,8 @@ import android.support.annotation.NonNull
 
 @Entity(tableName = "situation_table")
 
-data class Situation(@PrimaryKey @NonNull val name: String,@NonNull val meaning: String ) {
-
+data class Situation(@PrimaryKey @NonNull val name: String,@NonNull val meaning: String )
+{
 
 
 

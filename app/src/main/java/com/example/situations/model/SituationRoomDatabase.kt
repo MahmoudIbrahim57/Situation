@@ -5,29 +5,27 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database( entities = [Situation::class],version = 1, exportSchema = false)
+@Database( entities = [Situation::class],version = 1)
 abstract  class SituationRoomDatabase : RoomDatabase() {
+    abstract fun situationDao(): SituationDAO
 
-    abstract fun situationDao() : SituationDAO
-    companion object {
+     companion object {
         @Volatile
-        var database: SituationRoomDatabase?=null
-        fun getInstance(context: Context): SituationRoomDatabase?{
+        var dbInstance: SituationRoomDatabase? = null
 
-         if(database==null)
-         {
-             synchronized(SituationRoomDatabase::class.java){
-                if(database==null){
+        var dbName = "situations_database"
 
-                    database= Room.databaseBuilder(context.applicationContext,SituationRoomDatabase::class.java
-                        ,"situations_database").build()
+        fun getInstance(context: Context): SituationRoomDatabase {
+            val tempInstance = dbInstance
+            if(tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this){
+                val instance = Room.databaseBuilder(context.applicationContext, SituationRoomDatabase::class.java,dbName).build()
+                dbInstance = instance
+                return instance
+            }
 
-                }
-
-             }
-
-         }
-        return database
         }
     }
 }

@@ -9,7 +9,7 @@ import android.widget.TextView
 import com.example.situations.R
 import com.example.situations.model.Situation
 
-class SituationListAdapter(private val context:Context): RecyclerView.Adapter<SituationListAdapter.SituationViewHolder>() {
+class SituationListAdapter(private val context:Context , private var mItemClickListener :ItemClickListener): RecyclerView.Adapter<SituationListAdapter.SituationViewHolder>() {
    private lateinit var mSituation:List<Situation>
     fun getSiuation()=mSituation
     fun setSituation(situation: List<Situation>){
@@ -18,6 +18,11 @@ class SituationListAdapter(private val context:Context): RecyclerView.Adapter<Si
         notifyDataSetChanged()
     }
 
+
+    interface ItemClickListener{
+        fun onItemClick(view: View, position: Int)
+
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SituationViewHolder {
 
         return SituationViewHolder(LayoutInflater.from(context).inflate(R.layout.list_item,parent,false))
@@ -31,6 +36,14 @@ class SituationListAdapter(private val context:Context): RecyclerView.Adapter<Si
         var currentSituation = mSituation[position]
 
         holder.situationTextView.text=currentSituation.name
+
+        holder.situationTextView.setOnClickListener{
+            mItemClickListener.onItemClick(
+                holder.situationTextView
+                ,position
+            )
+
+        }
     }
 
     class SituationViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
